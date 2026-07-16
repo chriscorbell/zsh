@@ -1,0 +1,31 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shell:
+    runs-on: macos-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check syntax
+        run: |
+          zsh -n .zshrc
+          sh -n install.sh
+      - name: Test installation
+        run: |
+          test_home=$(mktemp -d)
+          HOME="$test_home" ./install.sh
+          test "$(readlink "$test_home/.zshrc")" = "$GITHUB_WORKSPACE/.zshrc"
+          HOME="$test_home" zsh -dfc 'source "$HOME/.zshrc"'
