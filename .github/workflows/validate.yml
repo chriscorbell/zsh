@@ -15,14 +15,17 @@ concurrency:
 
 jobs:
   shell:
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./test.sh
+
+  linux:
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - name: Install Zsh
-        if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install --yes zsh
       - run: ./test.sh
