@@ -81,3 +81,6 @@ for _zsh_plugin in \
   done
 done
 unset _zsh_plugin _zsh_share_dir _zsh_share_dirs
+
+# Load machine-specific settings without modifying this tracked config.
+[[ -r "${ZDOTDIR:-$HOME}/.zshrc.local" ]] && source "${ZDOTDIR:-$HOME}/.zshrc.local"

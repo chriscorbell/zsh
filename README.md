@@ -58,3 +58,10 @@ effect in the next shell:
 git -C ~/zsh pull
 exec zsh
 ~~~
+
+## Machine-specific configuration
+
+Put settings that should not be committed to this repository in
+`~/.zshrc.local` (or `$ZDOTDIR/.zshrc.local` when `ZDOTDIR` is set). The main
+configuration loads that file when it exists. This also gives other tools a
+place to install shell integration without modifying the tracked `.zshrc`.
