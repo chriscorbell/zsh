@@ -49,10 +49,24 @@ _prompt_host='%F{242}%n@%m%f '
 PROMPT=$'${_prompt_host}%B%F{39}%~%f%b${vcs_info_msg_0_}${_prompt_duration}\n%B%(?.%F{76}.%F{196})%(!.#.❯)%f%b '
 RPROMPT='%(?..%B%F{196}✘ %?%f%b  )%F{242}%D{%I:%M %p}%f'
 
-# Homebrew, Git, and command-line shortcuts.
-alias in='brew install'
-alias un='brew uninstall'
-alias up='brew update && brew upgrade'
+# Package manager, Git, and command-line shortcuts.
+if (( ${+commands[apt]} )); then
+  if (( EUID == 0 )); then
+    _package_manager='apt'
+  elif (( ${+commands[sudo]} )); then
+    _package_manager='sudo apt'
+  else
+    _package_manager='apt'
+  fi
+  alias in="$_package_manager install"
+  alias un="$_package_manager remove"
+  alias up="$_package_manager update && $_package_manager upgrade"
+  unset _package_manager
+elif (( ${+commands[brew]} )); then
+  alias in='brew install'
+  alias un='brew uninstall'
+  alias up='brew update && brew upgrade'
+fi
 alias grep='grep --color=auto'
 alias gs='git status'
 alias ga='git add .'
@@ -64,7 +78,11 @@ alias gb='git branch'
 alias gcm='git commit -m'
 alias gps='git push'
 alias gpl='git pull'
-(( ${+commands[bat]} )) && alias cat='bat --theme ansi -pp'
+if (( ${+commands[bat]} )); then
+  alias cat='bat --theme ansi -pp'
+elif (( ${+commands[batcat]} )); then
+  alias cat='batcat --theme ansi -pp'
+fi
 (( ${+commands[eza]} )) && alias ls='eza -al --header --git --icons=always'
 
 gacp() {
@@ -76,12 +94,29 @@ gacp() {
 # Searchable shell history powered by Atuin.
 (( ${+commands[atuin]} )) && eval "$(atuin init zsh)"
 
-# Interactive command-line helpers. Keep syntax highlighting last.
-_brew_prefix=${HOMEBREW_PREFIX:-${commands[brew]:h:h}}
-[[ -r "$_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] &&
-  source "$_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-[[ -r "$_brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] &&
-  source "$_brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-unset _brew_prefix
+# Add local tools only when they are installed.
+[[ -d "$HOME/.opencode/bin" ]] && export PATH="$HOME/.opencode/bin:$PATH"
 
-export PATH="$HOME/.opencode/bin:$PATH"
+# Interactive command-line helpers from Homebrew or Debian-family packages.
+_zsh_share_dirs=(/usr/share)
+if [[ -n ${HOMEBREW_PREFIX:-} ]]; then
+  _zsh_share_dirs=("$HOMEBREW_PREFIX/share" $_zsh_share_dirs)
+elif (( ${+commands[brew]} )); then
+  _zsh_share_dirs=("${commands[brew]:h:h}/share" $_zsh_share_dirs)
+fi
+
+for _zsh_share_dir in $_zsh_share_dirs; do
+  if [[ -r "$_zsh_share_dir/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+    source "$_zsh_share_dir/zsh-autosuggestions/zsh-autosuggestions.zsh"
+    break
+  fi
+done
+
+# Keep syntax highlighting last so it can wrap every command-line widget.
+for _zsh_share_dir in $_zsh_share_dirs; do
+  if [[ -r "$_zsh_share_dir/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+    source "$_zsh_share_dir/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+    break
+  fi
+done
+unset _zsh_share_dir _zsh_share_dirs
