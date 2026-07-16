@@ -14,11 +14,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  shell:
-    runs-on: macos-latest
+  validate:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: shell
+            os: macos-latest
+          - name: linux
+            os: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      - name: Install Zsh
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install --yes zsh
       - name: Check syntax
         run: |
           zsh -n .zshrc
