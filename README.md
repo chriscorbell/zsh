@@ -5,7 +5,7 @@ a fast dependency-free prompt and a small set of command-line conveniences.
 
 ## Highlights
 
-- Two-line prompt with Git status, command duration, exit status, and time
+- Two-line prompt with Git status, exit status, and time
 - Atuin-backed searchable history
 - Autosuggestions and syntax highlighting
 - Platform-aware aliases for Homebrew or apt, Git, bat, and eza
@@ -19,25 +19,33 @@ Clone the repo:
 git clone https://github.com/chriscorbell/zsh.git ~/zsh
 ~~~
 
-Install Zsh, plugins, and the optional command-line tools available for your
-platform, then link the configuration:
+Install the packages for your platform.
+
+On macOS with Homebrew:
 
 ~~~sh
-~/zsh/install.sh --packages
+brew bundle --file ~/zsh/Brewfile
 ~~~
 
-On macOS this uses Homebrew. On Debian, Ubuntu, and Raspberry Pi OS it uses apt
-and asks for sudo when necessary. Tools that are not available from the
-configured apt repositories are skipped; the configuration works without them.
-
-Start a fresh shell:
+On Debian, Ubuntu, or Raspberry Pi OS:
 
 ~~~sh
+sudo apt update
+sudo apt install zsh zsh-autosuggestions zsh-syntax-highlighting
+~~~
+
+Then link the configuration and start a fresh shell:
+
+~~~sh
+~/zsh/install.sh
 exec zsh
 ~~~
 
-To link only, without installing packages, run `~/zsh/install.sh` instead. You
-can optionally make Zsh your login shell with `chsh -s "$(command -v zsh)"`.
+Atuin, bat, and eza are optional. When installed, the configuration enables
+them automatically (including Debian's `batcat` command name).
+
+You can optionally make Zsh your login shell with
+`chsh -s "$(command -v zsh)"`.
 
 > [!NOTE]
 > The installer backs up an existing Zsh configuration before linking this
