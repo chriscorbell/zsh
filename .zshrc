@@ -1,3 +1,9 @@
+# Initialize NVM when installed.
+if [[ -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]]; then
+  export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+  source "$NVM_DIR/nvm.sh"
+fi
+
 # Make user-installed commands available before detecting optional tools.
 typeset -U path
 [[ -d "$HOME/.opencode/bin" ]] && path=("$HOME/.opencode/bin" $path)
