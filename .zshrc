@@ -1,3 +1,8 @@
+# Make user-installed commands available before detecting optional tools.
+typeset -U path
+[[ -d "$HOME/.opencode/bin" ]] && path=("$HOME/.opencode/bin" $path)
+[[ -d "$HOME/.local/bin" ]] && path=("$HOME/.local/bin" $path)
+
 # A clean, dependency-free prompt.
 autoload -Uz colors vcs_info add-zsh-hook
 colors
@@ -61,9 +66,6 @@ gacp() {
 
 # Searchable shell history powered by Atuin.
 (( ${+commands[atuin]} )) && eval "$(atuin init zsh)"
-
-# Add local tools only when they are installed.
-[[ -d "$HOME/.opencode/bin" ]] && export PATH="$HOME/.opencode/bin:$PATH"
 
 # Interactive helpers from Homebrew or Debian-family packages.
 _zsh_share_dirs=(/usr/share)
