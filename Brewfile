@@ -1,5 +1,0 @@
-brew "atuin"
-brew "bat"
-brew "eza"
-brew "zsh-autosuggestions"
-brew "zsh-syntax-highlighting"
